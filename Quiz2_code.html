@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار مصطلحات التخطيط الاستراتيجي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+        }
+        
+        h1 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 24px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #1e3c72, #2a5298);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .question-container {
+            margin-bottom: 30px;
+        }
+        
+        .question-number {
+            color: #1e3c72;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            background: #e9ecef;
+            transform: translateX(-5px);
+        }
+        
+        .option.selected {
+            background: #e3f2fd;
+            border-color: #1e3c72;
+        }
+        
+        .option.correct {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        
+        .option.incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        
+        .option input[type="radio"] {
+            margin-left: 15px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .option label {
+            flex: 1;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .explanation {
+            background: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .explanation.show {
+            display: block;
+        }
+        
+        .button-container {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            flex: 2;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            flex: 1;
+        }
+        
+        .results {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .score {
+            font-size: 48px;
+            color: #1e3c72;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 اختبار مصطلحات التخطيط الاستراتيجي</h1>
+        <div class="subtitle">10 أسئلة مع الشرح التفاعلي</div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <div id="quiz-content"></div>
+        
+        <div class="button-container">
+            <button class="btn-secondary" id="prevBtn" onclick="previousQuestion()" disabled>السابق</button>
+            <button class="btn-primary" id="nextBtn" onclick="nextQuestion()">التالي</button>
+        </div>
+        
+        <div id="results" class="results">
+            <h2>🎉 تهانينا! لقد أكملت الاختبار</h2>
+            <div class="score" id="score">0/10</div>
+            <div class="feedback" id="feedback"></div>
+            <button class="btn-primary" onclick="restartQuiz()">إعادة الاختبار</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "1. ما هو المصطلح الذي يصف الطموح بعيد المدى والهدف النهائي الذي تسعى الدولة للوصول إليه؟",
+                options: ["أ) الرسالة (Mission)", "ب) الرؤية (Vision)", "ج) القيم (Values)", "د) المبادرات (Initiatives)"],
+                correct: 1,
+                explanation: "الرؤية (Vision) هي الصورة المستقبلية الطموحة التي تسعى الدولة لتحقيقها على المدى البعيد، مثل 'أن تصبح قطر مركزًا ماليًا عالميًا'."
+            },
+            {
+                question: "2. مقارنة أداء قطر التعليمي مع أداء دولة رائدة مثل سنغافورة لاستخلاص أفضل الممارسات يسمى:",
+                options: ["أ) تحليل سوت (SWOT)", "ب) المقارنة المرجعية (Benchmarking)", "ج) تحليل بيستل (PESTEL)", "د) تخصيص الموارد (Resource Allocation)"],
+                correct: 1,
+                explanation: "المقارنة المرجعية (Benchmarking) هي عملية مقارنة الأداء مع أفضل المؤسسات أو الدول لتحسين الأداء."
+            },
+            {
+                question: "3. الأداة التي تستخدم لتحليل البيئة الداخلية (قوة وضغف) والبيئة الخارجية (فرص وتهديدات) هي:",
+                options: ["أ) مؤشرات الأداء (KPIs)", "ب) التحليل الرباعي (SWOT)", "ج) الأهداف الذكية (SMART)", "د) العائد على الاستثمار (ROI)"],
+                correct: 1,
+                explanation: "تحليل SWOT (القوة، الضعف، الفرص، التهديدات) هو الأداة الأساسية لتحليل البيئة الداخلية والخارجية."
+            },
+            {
+                question: "4. النظام الذي يضمن وضوح المسؤولية والرقابة على تنفيذ القرارات الاستراتيجية يسمى:",
+                options: ["أ) التوافق الاستراتيجي (Alignment)", "ب) الحوكمة (Governance)", "ج) تخطيط السيناريوهات (Scenario Planning)", "د) الرشاقة الاستراتيجية (Agility)"],
+                correct: 1,
+                explanation: "الحوكمة (Governance) تحدد من المسؤول عن ماذا، وكيف يتم الرقابة واتخاذ القرارات."
+            },
+            {
+                question: "5. الاختيار بين بناء محطة طاقة شمسية أو بناء ملعب رياضي بسبب محدودية الميزانية يسمى:",
+                options: ["أ) الأثر (Impact)", "ب) المفاضلة (Trade-off)", "ج) سلاسل القيمة (Value Chain)", "د) المخرجات (Outputs)"],
+                correct: 1,
+                explanation: "المفاضلة (Trade-off) تعني الاختيار بين بديلين بسبب محدودية الموارد."
+            },
+            {
+                question: "6. الأدوات الرقمية التي تُستخدم لمتابعة التقدم نحو الأهداف بأرقام محددة وواضحة هي:",
+                options: ["أ) القيم (Values)", "ب) مؤشرات الأداء الرئيسية (KPIs)", "ج) أصحاب المصلحة (Stakeholders)", "د) تحليل بيستل (PESTEL)"],
+                correct: 1,
+                explanation: "مؤشرات الأداء الرئيسية (KPIs) هي مقاييس كمية تقيس مدى التقدم نحو تحقيق الأهداف."
+            },
+            {
+                question: "7. النظام الذي يعرض البيانات والنتائج بشكل مرئي ولحظي للقادة لاتخاذ قرارات سريعة يسمى:",
+                options: ["أ) الخطة التشغيلية (Operational Plan)", "ب) لوحة القياس (Dashboard)", "ج) خارطة الطريق (Roadmap)", "د) إدارة المخاطر (Risk Management)"],
+                correct: 1,
+                explanation: "لوحة القياس (Dashboard) تعرض مؤشرات الأداء بشكل مرئي ومباشر لتسهيل اتخاذ القرارات."
+            },
+            {
+                question: "8. يشير مصطلح 'الاستدامة' (Sustainability) في التخطيط الاستراتيجي إلى:",
+                options: ["أ) تحقيق أسرع ربح ممكن في أقل وقت.", "ب) ضمان بقاء الأثر الإيجابي للمشاريع للأجيال القادمة.", "ج) إلغاء المشاريع القديمة واستبدالها دائماً.", "د) زيادة عدد الموظفين في القطاع الحكومي."],
+                correct: 1,
+                explanation: "الاستدامة تعني تلبية احتياجات الحاضر دون المساس بقدرة الأجيال القادمة على تلبية احتياجاتها."
+            },
+            {
+                question: "9. عندما نصف هدفاً بأنه 'قابل للقياس' و 'موقوت بزمن'، فإننا نطبق معايير الأهداف الـ:",
+                options: ["أ) SWOT", "ب) SMART", "ج) PESTEL", "د) ROI"],
+                correct: 1,
+                explanation: "SMART هي معايير الأهداف: محددة، قابلة للقياس، قابلة للتحقيق، ذات صلة، ومحددة بزمن."
+            },
+            {
+                question: "10. المصطلح الذي يصف 'المسافة' أو الفرق بين الوضع الحالي والوضع المنشود في الخطة هو:",
+                options: ["أ) الميزة التنافسية (Competitive Advantage)", "ب) الفجوة الاستراتيجية (Strategic Gap)", "ج) التغذية الراجعة (Feedback Loop)", "د) عوامل النجاح الحرجة (Critical Success Factors)"],
+                correct: 1,
+                explanation: "الفجوة الاستراتيجية (Strategic Gap) هي الفرق بين أين نحن الآن وأين نريد أن نكون."
+            }
+        ];
+
+        // نفس دوال JavaScript من الاختبار الأول
+        let currentQuestion = 0;
+        let answers = new Array(questions.length).fill(null);
+        let answered = new Array(questions.length).fill(false);
+        let quizCompleted = false;
+
+        function renderQuestion() {
+            const content = document.getElementById('quiz-content');
+            const q = questions[currentQuestion];
+            
+            let html = `
+                <div class="question-container">
+                    <div class="question-number">السؤال ${currentQuestion + 1} من ${questions.length}</div>
+                    <div class="question-text">${q.question}</div>
+                    <div class="options" id="options">
+            `;
+            
+            q.options.forEach((option, index) => {
+                const isSelected = answers[currentQuestion] === index;
+                const isAnswered = answered[currentQuestion];
+                
+                let optionClass = 'option';
+                if (isSelected) optionClass += ' selected';
+                
+                html += `
+                    <div class="${optionClass}" onclick="selectOption(${index})">
+                        <input type="radio" name="question" value="${index}" ${isSelected ? 'checked' : ''} ${isAnswered ? 'disabled' : ''}>
+                        <label>${option}</label>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                    <div class="explanation ${answered[currentQuestion] ? 'show' : ''}" id="explanation">
+                        <p><strong>الشرح:</strong> ${q.explanation}</p>
+                    </div>
+                </div>
+            `;
+            
+            content.innerHTML = html;
+            
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress').style.width = `${progress}%`;
+            
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+        }
+
+        function selectOption(optionIndex) {
+            if (answered[currentQuestion] || quizCompleted) return;
+            
+            answers[currentQuestion] = optionIndex;
+            answered[currentQuestion] = true;
+            
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function showResults() {
+            quizCompleted = true;
+            
+            const correctAnswers = answers.reduce((count, answer, index) => {
+                return count + (answer === questions[index].correct ? 1 : 0);
+            }, 0);
+            
+            document.getElementById('quiz-content').style.display = 'none';
+            document.querySelector('.button-container').style.display = 'none';
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.classList.add('show');
+            document.getElementById('score').textContent = `${correctAnswers}/${questions.length}`;
+            
+            let feedbackText = '';
+            if (correctAnswers >= 9) feedbackText = 'ممتاز! فهم عميق لمصطلحات التخطيط الاستراتيجي.';
+            else if (correctAnswers >= 7) feedbackText = 'جيد جداً! لديك فهم جيد للمصطلحات.';
+            else if (correctAnswers >= 5) feedbackText = 'مقبول. تحتاج إلى مراجعة بعض المصطلحات.';
+            else feedbackText = 'ننصح بمراجعة الدروس مرة أخرى.';
+            
+            document.getElementById('feedback').innerHTML = `
+                <p>${feedbackText}</p>
+                <p>لقد أجبت بشكل صحيح على ${correctAnswers} من أصل 10 أسئلة.</p>
+            `;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            answers = new Array(questions.length).fill(null);
+            answered = new Array(questions.length).fill(false);
+            quizCompleted = false;
+            
+            document.getElementById('quiz-content').style.display = 'block';
+            document.querySelector('.button-container').style.display = 'flex';
+            document.getElementById('results').classList.remove('show');
+            
+            renderQuestion();
+        }
+
+        renderQuestion();
+    </script>
+</body>
+</html>
